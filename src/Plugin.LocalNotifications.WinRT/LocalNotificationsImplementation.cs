@@ -42,6 +42,7 @@ namespace Plugin.LocalNotifications
            
             manager.Show(toast);
         }
+        
 
         /// <summary>
 		/// Show a local notification at a specified time
@@ -61,13 +62,14 @@ namespace Plugin.LocalNotifications
               ? DateTime.Now.AddMilliseconds(100)
               : notifyTime;
 
-            var scheduledTileNotification = new ScheduledTileNotification(xmlDoc, correctedTime)
-            {
+            var toast = new ScheduledToastNotification(xmlDoc, correctedTime)
+           {
                 Id = id.ToString()
             };
-
-            TileUpdateManager.CreateTileUpdaterForApplication().AddToSchedule(scheduledTileNotification);
-        }
+            // Create a toast notifier and show the toast
+            var manager = ToastNotificationManager.CreateToastNotifier();
+            manager.AddToSchedule(toast);
+    }
 
         /// <summary>
         /// Cancel a local notification
@@ -75,13 +77,15 @@ namespace Plugin.LocalNotifications
         /// <param name="id">Id of the notification to cancel</param>
         public void Cancel(int id)
         {
-            var scheduledNotifications = TileUpdateManager.CreateTileUpdaterForApplication().GetScheduledTileNotifications();
+      var manager = ToastNotificationManager.CreateToastNotifier();
+      var scheduledNotifications = manager.GetScheduledToastNotifications();
+
             var notification =
                 scheduledNotifications.FirstOrDefault(n => n.Id.Equals(id.ToString(), StringComparison.OrdinalIgnoreCase));
 
             if (notification != null)
             {
-                TileUpdateManager.CreateTileUpdaterForApplication().RemoveFromSchedule(notification);
+                manager.RemoveFromSchedule(notification);
             }
         }
     }
